@@ -50,10 +50,30 @@ class SignupScreen extends Component {
     this.signupAction = this.signupAction.bind(this);
   }
 
-  _signInAsync = async () => {
-    //await AsyncStorage.setItem('userToken', 'abc');
+  _signInAsync = async (token) => {
+    try {
+      await AsyncStorage.setItem('userToken', token);
+      this.props.navigation.navigate('App');
+    } catch(e) {
+      console.log("AsyncStorage failed to store token:", e);
+    }
+
     this.props.navigation.navigate('App');
   };
+
+  _retrieveTokenAsync = async() => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+
+      if(token == null) {
+        console.log("User token is null");
+      }
+      
+      return token;
+    } catch(e) {
+      console.log("AsyncStorage failed to retrieve token:", e);
+    }
+  }
 
   updateSignupFieldState(key, value) {
     this.setState({ [key]: value }, this.checkEnabled);
@@ -91,7 +111,7 @@ async signupAction() {
         'Alert!',
         'You have successfully logged in',
         [
-          { text: 'OK', onPress: () => this._signInAsync() }
+          { text: 'OK', onPress: () => this._signInAsync(result.token) }
         ],
         { cancelable: false }
       );

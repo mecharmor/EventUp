@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, AsyncStorage } from 'react-native';
 
 export default class EventsScreen extends React.Component {
   static navigationOptions = {
@@ -14,13 +14,25 @@ export default class EventsScreen extends React.Component {
     },
   };
 
+  _retrieveTokenAsync = async() => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      
+      console.log("token: ", token);
+    } catch(e) {
+      console.log("AsyncStorage failed to retrieve token:", e);
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text>EventsScreen</Text>
         <Button
-          title = "press me"
-          onPress ={() => this.props.navigation.navigate('detailEvent')}
+          //title = "press me"
+          title = "test token"
+          onPress ={() => this._retrieveTokenAsync()}
+          //onPress ={() => this.props.navigation.navigate('detailEvent')}
         />
       </View>
     );
