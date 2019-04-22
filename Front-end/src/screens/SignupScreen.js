@@ -51,7 +51,7 @@ class SignupScreen extends Component {
   }
 
   _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
+    //await AsyncStorage.setItem('userToken', 'abc');
     this.props.navigation.navigate('App');
   };
 
@@ -64,47 +64,49 @@ class SignupScreen extends Component {
     this.setState({ enabled: emailValidator(email) && password && password.length > 0 });
   }
 
-    async signupAction() {
-      const {  firstName, lastName, email, password } = this.state
-      const { navigate } = this.props.navigation
+async signupAction() {
 
-      try {
-        let response = await fetch('http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-        body: 
-          JSON.stringify({
-            "FirstName" : firstName,
-            "LastName": lastName,
-            "Email": email,
-            "Password": password,
-          })
-      });
+  const { firstName, lastName, email, password } = this.state
+  const { navigate } = this.props.navigation
 
-      response.json().then(result => {
-        //Sign Up Successful
-        if (result.message == "success") {
-          Alert.alert(
-            'Alert!',
-            'You have successfully logged in',
-            [
-              { text: 'OK', onPress: () => this._signInAsync() }
-            ],
-            { cancelable: false }
-          );
-        } 
-        //Sign Up Failed
-        else {
-          console.log("Sign Up Failed");
-        }
+  try {
+    let response = await fetch('http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/register', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: 
+      JSON.stringify({
+        "FirstName" : firstName,
+        "LastName": lastName,
+        "Email": email,
+        "Password": password,
       })
-    } catch (error) {
-        this.setState({ loading: false, response: error })
-        console.log(error)
-      }
+  });
+
+  response.json().then(result => {
+    //Sign Up Successful
+    if (result.message == "success" || result.message == "Successful login") {
+      Alert.alert(
+        'Alert!',
+        'You have successfully logged in',
+        [
+          { text: 'OK', onPress: () => this._signInAsync() }
+        ],
+        { cancelable: false }
+      );
+    } 
+    //Sign Up Failed
+    else {
+      console.log("Message: ", result.message);
+      console.log("Sign Up Failed");
     }
+  })
+} catch (error) {
+    this.setState({ loading: false, response: error })
+    console.log(error)
+  }
+}
 
   render() {
     const { firstName, lastName, email, password, loading, enabled } = this.state;

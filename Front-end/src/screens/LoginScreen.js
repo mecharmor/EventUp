@@ -49,7 +49,7 @@ class LoginScreen extends Component {
   }
 
   _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
+    //await AsyncStorage.setItem('userToken', 'abc');
     this.props.navigation.navigate('App');
   };
 
@@ -66,54 +66,55 @@ async loginAction() {
 
   this.setState({ loading: true })
   
-      const { email, password } = this.state
-      const { navigate } = this.props.navigation
+  const { email, password } = this.state
+  const { navigate } = this.props.navigation
 
-      console.log("Details : ", email, " ",password);
-    try {
-        let response = await fetch('http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-        body: 
-          JSON.stringify({
-            "Email" : email,
-            "Password" : password
-        })
-      });
-
-      response.json().then(result => {
-        //Login Successful
-        if (result.message =="Successful login"){
-          Alert.alert(
-            'Alert!',
-            'You have successfully logged in',
-            result.token
-            [
-              { text: 'OK', onPress: () => this._signInAsync() }
-            ],
-            { cancelable: false }
-          );
-        } 
-        //Login failed
-        else {
-          Alert.alert(
-            'Alert!',
-            'Login Failed',
-            [
-              { text: 'OK' }
-            ],
-            { cancelable: false }
-          );
-        }
+  console.log("Details : ", email, " ",password);
+  
+  try {
+      let response = await fetch('http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: 
+        JSON.stringify({
+          "Email" : email,
+          "Password" : password
       })
-    } catch (error) {
-      this.setState({ loading: false, response: error });
-      console.log(error);
-    }
-    this.setState({ loading: false })
+    });
+
+    response.json().then(result => {
+      //Login Successful
+      if (result.message == "success" || result.message == "Successful login"){
+        Alert.alert(
+          'Alert!',
+          'You have successfully logged in',
+          [
+            { text: 'OK', onPress: () => this._signInAsync() }
+          ],
+          { cancelable: false }
+        );
+      } 
+      //Login failed
+      else {
+        Alert.alert(
+          'Alert!',
+          'Login Failed',
+          [
+            { text: 'OK' }
+          ],
+          { cancelable: false }
+        );
+      }
+    })
+  } catch (error) {
+    this.setState({ loading: false, response: error });
+    console.log(error);
   }
+
+  this.setState({ loading: false })
+}
 
 
   render() {
@@ -197,4 +198,3 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
-
