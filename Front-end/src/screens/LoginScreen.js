@@ -85,10 +85,11 @@ async loginAction() {
 
       response.json().then(result => {
         //Login Successful
-        if (result.message =="success"){
+        if (result.message =="Successful login"){
           Alert.alert(
             'Alert!',
             'You have successfully logged in',
+            result.token
             [
               { text: 'OK', onPress: () => this._signInAsync() }
             ],
