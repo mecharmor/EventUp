@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button, Share } from 'react-native';
 
 export default class DetailEventScreen extends React.Component {
   static navigationOptions = {
@@ -17,7 +17,14 @@ export default class DetailEventScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>DetailEventScreen</Text>
+        <Button
+          title = "test share"
+          onPress ={() => Share.share({
+            message: 'Event',
+            url: 'Deep link',
+            title: 'Come to our event!'
+          })}
+        />
       </View>
     );
   }

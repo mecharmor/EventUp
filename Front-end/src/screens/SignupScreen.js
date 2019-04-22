@@ -64,12 +64,8 @@ class SignupScreen extends Component {
   _retrieveTokenAsync = async() => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-
-      if(token == null) {
-        console.log("User token is null");
-      }
       
-      return token;
+      console.log("token: ", token);
     } catch(e) {
       console.log("AsyncStorage failed to retrieve token:", e);
     }

@@ -29,10 +29,8 @@ export default class EventsScreen extends React.Component {
       <View style={styles.container}>
         <Text>EventsScreen</Text>
         <Button
-          //title = "press me"
-          title = "test token"
-          onPress ={() => this._retrieveTokenAsync()}
-          //onPress ={() => this.props.navigation.navigate('detailEvent')}
+          title = "press me"
+          onPress ={() => this.props.navigation.navigate('detailEvent')}
         />
       </View>
     );
