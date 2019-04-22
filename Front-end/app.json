@@ -23,7 +23,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.csc667.eventup"
+    },
+    "android": {
+      "package": "com.csc667.eventup"
     }
   }
 }
