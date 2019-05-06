@@ -92,8 +92,8 @@ export default class EventsScreen extends React.Component {
       const { status } = await Permissions.askAsync(Permissions.CALENDAR);
 
       //If permission was granted, create the event
-      if(status === 'granted')
-      {
+      if(status == 'granted')
+     {
         var dateString = item.StartDate.substring(0, 10);
 
         console.log(dateString + "T" + item.StartTime);
@@ -174,48 +174,8 @@ export default class EventsScreen extends React.Component {
 
           />
         </View>
-
-        <View style={{ flex: 1 }}>
-          <View style={{ marginTop: 15 }}>
-            <Text style={styles.titleStyling}>{item.Name}</Text>
-            <Text style={{ color: "#333" }}>
-              {moment.utc(item.StartDate).format("MMMM DD")}
-              {" | "}
-              {format("January 01, 2019 " + item.StartTime, "hh:mm a")}
-            </Text>
-            <Text style={{ color: "#333" }}>{item.LocationName}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignContent: "center",
-              padding: 10
-            }}
-          >
-            <Button
-              title="RSVP"
-              type="outline"
-              titleStyle={{ fontSize: 12, color: "white" }}
-              containerStyle={styles.buttonContainerStyle}
-              buttonStyle={styles.buttonStyling}
-              onPress={() => console.log("Why did you press me?")}
-            />
-            <Button
-              title="Share"
-              type="outline"
-              titleStyle={{ fontSize: 12, color: "white" }}
-              containerStyle={{
-                marginTop: 20,
-                marginBottom: 30,
-                marginLeft: 20
-              }}
-              buttonStyle={styles.buttonStyling}
-              onPress={() => this.onShare(item, item.Name, item.StartTime)}
-            />
-          </View>
-        </View>
-      </TouchableOpacity>
+      </View>
+      </View>
     );
   };
 
