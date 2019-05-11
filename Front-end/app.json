@@ -23,6 +23,7 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.667.EventUp",
       "supportsTablet": true
     }
   }
