@@ -1,5 +1,4 @@
 const db = require('../models/database.js');
-const jwt = require('jsonwebtoken');
 
 exports.getAllEvents = (req, res, next) => {
     db.query('SELECT Event.*, '+
@@ -92,3 +91,35 @@ exports.deleteEvent = (req, res, next) => {
     })
 }
 
+exports.filterEvents = (req, res, next) => {
+    db.query('SELECT * FROM Event WHERE StartDate > NOW(), CategoryId = ?  ORDER BY StartDate ASC, StartTime ASC', [req.params.id])
+    .then( (events) => {
+        res.status(200).json({
+            status: true,
+            events: events
+        })
+    })
+    .catch( (err) => {
+        res.status(500).json({
+            error
+        })
+    });
+}
+
+exports.startingSoon = (req, res, next) => {
+    date = new Date().toISOString().replace(/:/g, '-').slice(0,10);
+    console.log(date)
+    db.query(`SELECT * FROM Event WHERE StartDate > NOW()  ORDER BY StartDate ASC, StartTime ASC`)
+    .then( (events) => {
+        console.log('inside 200 status code');
+        res.status(200).json({
+            status: true,
+            events: events[0]
+        })
+    })
+    .catch( (err) => {
+        res.status(500).json({
+            err
+        })
+    });
+}
