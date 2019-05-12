@@ -7,7 +7,8 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  StatusBar
+  StatusBar,
+
 } from "react-native";
 import { CheckBox, Button } from "react-native-elements";
 import { TextInput } from "react-native-paper";
@@ -132,7 +133,7 @@ export default class CreateEvent extends React.Component {
     });
 
     if (!result.cancelled) {
- 
+      
       Image.getSize(result, (width, height) => {
         let imageSettings = {
           offset: { x: 0, y: 0 },
@@ -226,7 +227,11 @@ export default class CreateEvent extends React.Component {
       ageRestriction = "1";
     }
 
-    console.log("BASE 64 STRING : ",imageData.toString());
+
+
+
+
+    console.log("BASE 64 STRING : ",imageData);
     // console.log(categoryId,categoryName);
     // console.log(locationId,locationName);
 
@@ -234,39 +239,37 @@ export default class CreateEvent extends React.Component {
     try {
       const token = await AsyncStorage.getItem('userToken');
       const userId = await AsyncStorage.getItem('userId');
-  
+
+
       try {
+        var formData = new FormData();
+        formData.append("Name",title);
+        formData.append("Description",description);
+        formData.append("AgeRestriction",ageRestriction);      
+        formData.append("UserId",userId);
+        formData.append("CategoryId",categoryId);
+        formData.append("LocationId",locationId);
+        formData.append("Image",imageData);
+        formData.append("StartDate",startDate);
+        formData.append("StartTime",startTime);
+        formData.append("EndTime",endTime);
+  
+        console.log("Form Data", formData);
         let response = await fetch(
           "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/events",
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json; charset=utf-8",
+              "Content-Type": "multipart/form-data; charset=utf-8",
               Authorization:
                 token
             },
-  
-            body: JSON.stringify({
-              Name: title,
-              Description: description,
-              AgeRestriction: ageRestriction,
-              UserId: userId,
-              CategoryId: categoryId,
-              LocationId: locationId,
-              Image: imageData.toString(),
-              //Image: null,
-              StartDate: startDate,
-              StartTime: startTime,
-              EndTime: endTime
-            })
+            
+            body:formData
           }
         );
   
         response.text().then(result => {
-          
-          console.log("Result :",result);
-          //TODO : condition to check if event was created succesfully 
-          if(result.status){         
           Alert.alert(
             'Alert!',
             'Event Created Successfully',
@@ -275,16 +278,6 @@ export default class CreateEvent extends React.Component {
             ],
             { cancelable: false }
           );
-        } else {
-          Alert.alert(
-            'Alert!',
-            'Please Fill All Fields',
-            [
-              { text: 'OK', onPress: () => this.props.navigation.navigate('events') }
-            ],
-            { cancelable: false }
-          );
-        }
         });
       } catch (error) {
         this.setState({ loading: false, response: error });      
