@@ -9,31 +9,33 @@ import {
   Image,
   Share
 } from "react-native";
-import { Avatar, Button } from "react-native-elements";
+import { Avatar, Icon, Divider } from "react-native-elements";
 import { format } from "date-fns";
 import moment from "moment";
 
 export default class ProfileScreen extends React.Component {
-
-  static navigationOptions = {
-    title: 'Profile',
-    headerTintColor: 'white',
-    headerTitleStyle: {
-      fontWeight: 'bold',
-      color: 'white',
-    },
-    headerStyle: {
-      backgroundColor: '#39CA74',
-    },
-    headerRight: (
-      <Button
-        onPress={this._signOutAsync}
-        title="Sign Out"
-        color="#fff"
-        type='clear'
-        titleStyle={{ fontSize: 16, color: '#FFFFFF'}}
-      />    
-    ), 
+  static navigationOptions = ({ navigation }) => {
+    const { params = {} } = navigation.state;
+    return {
+      title: "Profile",
+      headerTintColor: "white",
+      headerTitleStyle: {
+        fontWeight: "bold",
+        color: "white"
+      },
+      headerStyle: {
+        backgroundColor: "#39CA74"
+      },
+      headerRight: (
+        <Icon
+          name="sign-out"
+          type="octicon"
+          color="#fff"
+          iconStyle={{ marginRight: 15 }}
+          onPress={() => params.handleSignOut()}
+        />
+      )
+    };
   };
 
   constructor(props) {
@@ -50,122 +52,111 @@ export default class ProfileScreen extends React.Component {
 
   async componentDidMount() {
     this.setState({ isLoading: true });
-    try {
-      const token = await AsyncStorage.getItem('userToken');
-      const userId = await AsyncStorage.getItem('userId');      
-    try {
-      let response = await fetch(
-        "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/posts",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            Authorization:token
-          },
-          body: 
-          JSON.stringify({
-            "UserId" : "35",
-        })
-        }
-      );
-      
-      response.json().then(result => {      
-      this.setState({ eventsData: result.data });
-      });
-    } catch (error) {
-      this.setState({ loading: false, response: error });
-      console.log(error);
-    }
-    var url = "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/"+userId;
+    this.props.navigation.setParams({ handleSignOut: this._signOutAsync });
 
     try {
-      let response = await fetch(
-        url,
-        {
+      const token = await AsyncStorage.getItem("userToken");
+      const userId = await AsyncStorage.getItem("userId");
+      try {
+        let response = await fetch(
+          "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/posts",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              Authorization: token
+            },
+            body: JSON.stringify({
+              UserId: "35"
+            })
+          }
+        );
+
+        response.json().then(result => {
+          this.setState({ eventsData: result.data });
+        });
+      } catch (error) {
+        this.setState({ loading: false, response: error });
+        console.log(error);
+      }
+      var url =
+        "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/users/" +
+        userId;
+
+      try {
+        let response = await fetch(url, {
           method: "GET",
           headers: {
             "Content-Type": "application/json; charset=utf-8",
-            Authorization:token
-          },
-        }
-      );
-      
-      response.json().then(result => {      
-      this.setState({firstName:result.UserCount[0].FirstName});
-      this.setState({lastName:result.UserCount[0].LastName});
+            Authorization: token
+          }
+        });
 
-      });
-    } catch (error) {
-      this.setState({ loading: false, response: error });
-      console.log(error);
+        response.json().then(result => {
+          this.setState({ firstName: result.UserCount[0].FirstName });
+          this.setState({ lastName: result.UserCount[0].LastName });
+        });
+      } catch (error) {
+        this.setState({ loading: false, response: error });
+        console.log(error);
+      }
+    } catch (e) {
+      console.log("AsyncStorage failed to retrieve token:", e);
     }
-
-
-
-  } catch(e) {
-    console.log("AsyncStorage failed to retrieve token:", e);
-  }
   }
 
   _signOutAsync = async () => {
     await AsyncStorage.clear();
-    this.props.navigation.navigate('Auth');
+    this.props.navigation.navigate("Auth");
   };
 
-
-  _renderEvents = (item) => {
-    return(
+  _renderEvents = item => {
+    return (
       <TouchableOpacity
         style={styles.cardContainer}
         key={item}
         onPress={() => this.props.navigation.navigate("detailEvent", { item })}
         activeOpacity={0.8}
       >
-    <View style={{ flexDirection: "row", paddingTop: 30 }}>
-      <Image
-        source={require("../img/sample_image.jpg")}
-        style={styles.imageEx}
-      />
-      <View style={{ flex: 1, paddingLeft: 30 }}>
-        <Text style={styles.titleStyling}>{item.Name}</Text>
-        <Text style={{color: '#333'}}>
-          {moment.utc(item.StartDate).format("MMMM DD")}{" | "}
-          {format("January 01, 2019 "+item.StartTime,"hh:mm a")}
-        </Text>
-        <Text style={{color: '#333'}}>{item.LocationName}</Text>      
-      </View>
-    </View>    
-    </TouchableOpacity>
-    )
-  }
-
+        <View style={{ flexDirection: "row", paddingTop: 30 }}>
+          <Image
+            source={require("../img/sample_image.jpg")}
+            style={styles.imageEx}
+          />
+          <View style={{ flex: 1, paddingLeft: 30 }}>
+            <Text style={styles.titleStyling}>{item.Name}</Text>
+            <Text style={{ color: "#333" }}>
+              {moment.utc(item.StartDate).format("MMMM DD")}
+              {" | "}
+              {format("January 01, 2019 " + item.StartTime, "hh:mm a")}
+            </Text>
+            <Text style={{ color: "#333" }}>{item.LocationName}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   render() {
-    const { eventsData,firstName,lastName } = this.state;    
+    const { eventsData, firstName, lastName } = this.state;
 
-    return (      
+    return (
       <View style={{ flex: 1 }}>
-
-
-        <View style={{ alignItems: 'center'}}>
-
-        <Avatar 
-        size="large" 
-        rounded 
-        title={firstName.substring(0,1)+lastName.substring(0,1)}
-        marginTop={30}
-        marginBottom={30}
-         />
+        <View style={{ alignItems: "center" }}>
+          <Avatar
+            size="large"
+            rounded
+            title={firstName.substring(0, 1) + lastName.substring(0, 1)}
+            marginTop={30}
+            marginBottom={30}
+          />
+          <Text style={styles.nameTitle}>
+            {firstName} {lastName}
+          </Text>
         </View>
-
-        <Text style={styles.nameTitle}>
-       {firstName}{" "}{lastName}
-      </Text>
-
-        <Text style={styles.baseText}>
-       My Events
-      </Text>
         <View style={styles.container}>
+          <Text style={styles.baseText}>My Events</Text>
+          <Divider style={{ backgroundColor: "black", marginTop: 10, marginBottom: 15, height: 1.5, width: 120 }} />
           <FlatList
             data={eventsData}
             showsVerticalScrollIndicator={false}
@@ -175,29 +166,25 @@ export default class ProfileScreen extends React.Component {
         </View>
       </View>
     );
-  
-
-
-    }
+  }
 }
 
 const styles = StyleSheet.create({
   nameTitle: {
-    fontSize:18,
+    fontSize: 18,
     marginBottom: 30,
-    alignSelf: 'center',
+    alignSelf: "center",
     fontStyle: "italic",
-    fontWeight:"500"
+    fontWeight: "500"
   },
 
   baseText: {
-    fontSize: 32, 
-    marginLeft: 10,
-    fontWeight: 'bold',
+    fontSize: 25,
+    fontWeight: "bold"
   },
 
   container: {
-    marginTop: 0,
+    marginTop: 10,
     marginLeft: 20,
     backgroundColor: "#FFFFFF"
   },
@@ -211,7 +198,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginLeft: 40
   },
-  
+
   titleStyling: {
     fontSize: 18,
     marginBottom: 5
@@ -220,6 +207,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 40,
     borderRadius: 5,
-    backgroundColor: '#39CA74'
+    backgroundColor: "#39CA74"
   }
 });
