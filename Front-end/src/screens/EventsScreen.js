@@ -9,7 +9,7 @@ import {
   Share,
   TouchableOpacity
 } from "react-native";
-import { Button } from "react-native-elements";
+import { Button, Icon } from "react-native-elements";
 import { format } from "date-fns";
 import moment from "moment";
 
@@ -23,8 +23,18 @@ export default class EventsScreen extends React.Component {
     },
     headerStyle: {
       backgroundColor: "#39CA74"
-    }
+    },
+    headerRight: (
+      <Icon
+        name='share-alt'
+        type='font-awesome'
+        color='#fff'
+        iconStyle={{ marginRight: 15 }} 
+        onPress={() => {toggleModal(!this.state.isModalVisible)}}
+      />
+      )
   };
+  
 
   constructor(props) {
     super(props);
@@ -37,7 +47,7 @@ export default class EventsScreen extends React.Component {
   }
 
   async componentDidMount() {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, isModalVisible: false });
 
     try {
       const token = await AsyncStorage.getItem("userToken");
@@ -66,6 +76,10 @@ export default class EventsScreen extends React.Component {
     } catch (e) {
       console.log("AsyncStorage failed to retrieve token:", e);
     }
+  }
+
+  toggleModal(visible) {
+    this.setState({ isModalVisible: visible });
   }
 
   onShare = async item => {
@@ -202,6 +216,17 @@ export default class EventsScreen extends React.Component {
             onPress={() => this.props.navigation.navigate("createEvent")}
           />
         </View>
+        <Modal animationType = {"slide"} transparent = {false}
+          visible = {this.state.isModalVisible}
+          onRequestClose = {() => { console.log("Modal has been closed.") } }>     
+            <View style = {styles.modal}>
+              <Text style = {styles.text}>Modal is open!</Text>          
+              <TouchableHighlight onPress = {() => {
+                this.toggleModal(!this.state.isModalVisible)}}> 
+                <Text style = {styles.text}>Close Modal</Text>
+              </TouchableHighlight>
+            </View>
+        </Modal>
       </View>
     );
   }
