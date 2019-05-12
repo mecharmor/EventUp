@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, StatusBar, Alert, AsyncStorage } from 'react-native';
 import { Button } from 'react-native-elements';
 import { TextInput } from 'react-native-paper';
+import * as Expo from "expo"
 import axios from 'axios';
 
 
@@ -47,6 +48,23 @@ class LoginScreen extends Component {
 
     this.updateLoginField = key => text => this.updateLoginFieldState(key, text);
     this.loginAction = this.loginAction.bind(this);
+  }
+
+  _googleSignInAsync = async () => {
+    try {
+      const result = await Expo.Google.logInAsync({
+        iosClientId: "234966867752-sv938fpm4jmh1an869mv7ujjrtmsl63o.apps.googleusercontent.com",
+        scopes: ["profile", "email"]
+      })
+      if (result.type === "success") {
+        console.log("Logged in with google");
+        console.log(result.user.email);
+      } else {
+        console.log("cancelled")
+      }
+    } catch (e) {
+      console.log("error", e)
+    }
   }
 
   _signInAsync = async (token,userId) => {
@@ -187,6 +205,14 @@ async loginAction() {
             disabled={!enabled}
             loading={loading}
             onPress={this.loginAction}
+          />
+          <Button
+            title="Sign in with google"
+            titleStyle={{ fontSize: 20, marginTop: 5 }}
+            containerStyle={{ marginTop: 20, marginBottom: 30 }}
+            buttonStyle={{ height: 50, borderRadius: 5, backgroundColor: PRIMARY_COLOR }}
+            activeOpacity={0.8}
+            onPress={this._googleSignInAsync}
           />
           <Button
             type="clear"
