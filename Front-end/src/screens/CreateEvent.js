@@ -227,15 +227,6 @@ export default class CreateEvent extends React.Component {
       ageRestriction = "1";
     }
 
-
-
-
-
-    console.log("BASE 64 STRING : ",imageData);
-    // console.log(categoryId,categoryName);
-    // console.log(locationId,locationName);
-
-
     try {
       const token = await AsyncStorage.getItem('userToken');
       const userId = await AsyncStorage.getItem('userId');
@@ -253,8 +244,7 @@ export default class CreateEvent extends React.Component {
         formData.append("StartDate",startDate);
         formData.append("StartTime",startTime);
         formData.append("EndTime",endTime);
-  
-        console.log("Form Data", formData);
+          
         let response = await fetch(
           "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/events",
           {
@@ -269,7 +259,8 @@ export default class CreateEvent extends React.Component {
           }
         );
   
-        response.text().then(result => {
+        response.json().then(result => {
+          if(result.status){
           Alert.alert(
             'Alert!',
             'Event Created Successfully',
@@ -278,6 +269,16 @@ export default class CreateEvent extends React.Component {
             ],
             { cancelable: false }
           );
+        }else {
+          Alert.alert(
+            'Alert!',
+            'Please Fill out All the Fields',
+            [
+              { text: 'OK', onPress: () => this.props.navigation.navigate('events') }
+            ],
+            { cancelable: false }
+          );
+        }
         });
       } catch (error) {
         this.setState({ loading: false, response: error });      
