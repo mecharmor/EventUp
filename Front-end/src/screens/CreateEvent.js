@@ -274,7 +274,7 @@ export default class CreateEvent extends React.Component {
             'Alert!',
             'Please Fill out All the Fields',
             [
-              { text: 'OK', onPress: () => this.props.navigation.navigate('events') }
+              { text: 'OK' }
             ],
             { cancelable: false }
           );
