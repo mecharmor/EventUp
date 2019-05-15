@@ -176,6 +176,42 @@ exports.getRSVP = (req, res, next) => {
         })
 }
 
+exports.checkRSVP = (req, res, next) => {
+    console.log('SELECT * FROM RSVP WHERE RSVP.EventId = ? AND RSVP.UserId = ?', [req.body.EventId, req.body.UserId]);
+
+    db.query('SELECT * FROM RSVP WHERE RSVP.EventId = ? AND RSVP.UserId = ?', [req.body.EventId, req.body.UserId])
+        .then(([data, _]) => {
+            let message = () => {
+                if(data.length == 0){
+                    return "RSVP does not exist";
+                }else{
+                    return "RSVP exists";
+                }
+            }
+
+            let exists = () => {
+                if(data.length == 0){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+
+            const response = {
+                status: true,
+                message: message(),
+                exists: exists()
+            }
+            res.status(200).json(response);
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: err
+            })
+        })
+}
+
 exports.getUsers = (req, res, next) => {
     db.query('SELECT * FROM User')
         .then(([users, fields]) => {

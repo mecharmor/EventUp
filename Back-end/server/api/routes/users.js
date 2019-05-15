@@ -14,6 +14,8 @@ router.get('/:id(\\d+)', checkAuth, userController.getUser);
 
 router.get('/RSVP/:UserId(\\d+)', userController.getRSVP);
 
+router.post('/checkRSVP', userController.checkRSVP);
+
 router.post('/RSVP', userController.RSVP);
 
 router.delete('/RSVP', userController.revoke);
