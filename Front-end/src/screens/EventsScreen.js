@@ -7,32 +7,38 @@ import {
   View,
   Image,
   Share,
-  TouchableOpacity
+  TouchableOpacity,
+  TouchableHighlight
 } from "react-native";
 import { Button, Icon } from "react-native-elements";
 import { format } from "date-fns";
+import Modal from 'react-native-modal';
 import moment from "moment";
 
 export default class EventsScreen extends React.Component {
-  static navigationOptions = {
-    title: "Events",
-    headerTintColor: "white",
-    headerTitleStyle: {
-      fontWeight: "bold",
-      color: "white"
-    },
-    headerStyle: {
-      backgroundColor: "#39CA74"
-    },
-    headerRight: (
-      <Icon
-        name='share-alt'
-        type='font-awesome'
-        color='#fff'
-        iconStyle={{ marginRight: 15 }} 
-        onPress={() => {toggleModal(!this.state.isModalVisible)}}
-      />
-      )
+  static navigationOptions = ({ navigation }) => {
+    const{ params } = navigation.state;
+
+    return {
+      title: "Events",
+      headerTintColor: "white",
+      headerTitleStyle: {
+        fontWeight: "bold",
+        color: "white"
+      },
+      headerStyle: {
+        backgroundColor: "#39CA74"
+      },
+      headerRight: (
+        <Icon
+          name='share-alt'
+          type='font-awesome'
+          color='#fff'
+          iconStyle={{ marginRight: 15 }} 
+          onPress={() => params.handleModal() }
+        />
+        )
+    }
   };
   
 
@@ -48,6 +54,8 @@ export default class EventsScreen extends React.Component {
 
   async componentDidMount() {
     this.setState({ isLoading: true, isModalVisible: false });
+    
+    this.props.navigation.setParams({ handleModal: this.toggleModal})
 
     try {
       const token = await AsyncStorage.getItem("userToken");
@@ -78,8 +86,10 @@ export default class EventsScreen extends React.Component {
     }
   }
 
-  toggleModal(visible) {
-    this.setState({ isModalVisible: visible });
+  toggleModal = () => {
+    this.setState((state) => {
+      return { isModalVisible: !state.isModalVisible }
+    });
   }
 
   onShare = async item => {
@@ -189,7 +199,7 @@ export default class EventsScreen extends React.Component {
   };
 
   render() {
-    const { eventsData, isLoading } = this.state;
+    const { eventsData, isLoading, isModalVisible } = this.state;
 
     return (
       <View style={{ flex: 1 }}>
@@ -216,16 +226,11 @@ export default class EventsScreen extends React.Component {
             onPress={() => this.props.navigation.navigate("createEvent")}
           />
         </View>
-        <Modal animationType = {"slide"} transparent = {false}
-          visible = {this.state.isModalVisible}
-          onRequestClose = {() => { console.log("Modal has been closed.") } }>     
-            <View style = {styles.modal}>
-              <Text style = {styles.text}>Modal is open!</Text>          
-              <TouchableHighlight onPress = {() => {
-                this.toggleModal(!this.state.isModalVisible)}}> 
-                <Text style = {styles.text}>Close Modal</Text>
-              </TouchableHighlight>
-            </View>
+        <Modal isVisible={isModalVisible}>
+          <View style={{ flex: 1 }}>
+            <Text>Hello!</Text>
+            <Button title="Hide modal" onPress={this.toggleModal} />
+          </View>
         </Modal>
       </View>
     );
