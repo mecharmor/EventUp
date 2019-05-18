@@ -166,12 +166,43 @@ export default class EventsScreen extends React.Component {
     }
   };
 
+  filterCategories = async (id) => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      try {
+        let response = await fetch(
+          "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/events",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              Authorization: token
+            }
+          }
+        );
+        
+        console.log(id);
+        response.json().then(result => {
+          console.log(result);
+          this.setState({ eventsData: result.data });
+          this.toggleModal();
+          console.log(this.state.eventsData);
+        });
+      } catch (error ) {
+        console.log(error);
+      }
+    } catch {
+      console.log(error)
+    }
+
+  }
+
   _renderCategories = item => {
     return (
       <TouchableOpacity
         style={styles.cardContainer}
         key={item}
-        onPress={() => this.props.navigation.navigate("detailEvent", { item })}
+        onPress={() => this.filterCategories(item.id)}
         activeOpacity={0.8}
       >
         <View>
@@ -179,6 +210,9 @@ export default class EventsScreen extends React.Component {
               source={{uri:"http://"+item.Image}}
               style={styles.imageEx}
             />
+            <Text style={styles.catNames}>
+              {item.Name}
+            </Text>
         </View>
       </TouchableOpacity>
     )
@@ -289,6 +323,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  catNames: {
+    textAlign: "center"
+  },
   imageEx: {
     width: 160,
     height: 120
@@ -309,7 +346,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#39CA74"
   },
   cardContainer: {
-    padding: 5,
+    padding: 2,
+
     height: 150,
     backgroundColor: "#fff",
     justifyContent: "flex-start",
