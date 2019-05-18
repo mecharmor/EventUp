@@ -32,10 +32,11 @@ export default class EventsScreen extends React.Component {
       },
       headerRight: (
         <Icon
-          name='share-alt'
-          type='font-awesome'
+          name='dashboard'
+          type='community'
           color='#fff'
           iconStyle={{ marginRight: 15 }} 
+          underlayColor={"#330033"}
           onPress={() => params.handleModal() }
         />
         )
@@ -154,7 +155,6 @@ export default class EventsScreen extends React.Component {
   };
 
   filterCategories = async (id) => {
-    console.log(id)
     try {
       const token = await AsyncStorage.getItem("userToken");
       try {
@@ -170,10 +170,9 @@ export default class EventsScreen extends React.Component {
         );
         
         response.json().then(result => {
-          console.log('hey');
-          this.setState({ eventsData: result.events });
+          console.log(result.data);
+          this.setState({ eventsData: result.data });
           this.toggleModal();
-          console.log(result);
         });
       } catch (error ) {
         console.log(error);
