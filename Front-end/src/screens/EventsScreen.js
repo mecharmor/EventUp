@@ -110,24 +110,6 @@ export default class EventsScreen extends React.Component {
     });
   }
 
-  onShare = async item => {
-    const str =
-      "Event name: " +
-      item.Name +
-      ". Time: " +
-      format("January 01, 2019 " + item.StartTime, "hh:mm a") +
-      ".";
-
-    try {
-      const result = await Share.share({
-        title: "Checkout this event from EventUp",
-        message: str
-      });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
   onAddCalendarEvent = async item => {
     try {
       //Prompt the user to provide access to the calendar
@@ -228,7 +210,8 @@ export default class EventsScreen extends React.Component {
       >
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Image
-            source={require("../img/sample_image.jpg")}
+            //source={require("../img/sample_image.jpg")}
+            source= {{uri:"http://"+item.Image}}
             style={styles.imageEx}
           />
         </View>
@@ -241,27 +224,6 @@ export default class EventsScreen extends React.Component {
               {format("January 01, 2019 " + item.StartTime, "hh:mm a")}
             </Text>
             <Text style={{ color: "#333" }}>{item.LocationName}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignContent: "center",
-              padding: 10
-            }}
-          >
-            <Button
-              title="Share"
-              type="outline"
-              titleStyle={{ fontSize: 12, color: "white" }}
-              containerStyle={{
-                marginTop: 20,
-                marginBottom: 30,
-                marginLeft: 20
-              }}
-              buttonStyle={styles.buttonStyling}
-              onPress={() => this.onShare(item, item.Name, item.StartTime)}
-            />
           </View>
         </View>
       </TouchableOpacity>
@@ -284,14 +246,14 @@ export default class EventsScreen extends React.Component {
 
         <View style={{ position: "absolute", right: 10, bottom: 30 }}>
           <Button
-            title="Create"
-            titleStyle={{ fontSize: 12 }}
+            title="+"
+            titleStyle={{ fontSize: 28 }}
             containerStyle={{}}
             buttonStyle={{
-              width: 60,
-              height: 40,
-              borderRadius: 5,
-              backgroundColor: "#39CA74"
+              width: 50,
+              height: 50,
+              borderRadius: 25,
+              backgroundColor: "#463077"
             }}
             onPress={() => this.props.navigation.navigate("createEvent")}
           />
