@@ -47,6 +47,7 @@ export default class EventsScreen extends React.Component {
 
     this.state = {
       eventsData: [],
+      categoricalData: [],
       isLoading: false,
       error: null
     };
@@ -73,10 +74,27 @@ export default class EventsScreen extends React.Component {
           }
         );
 
+        let response2 = await fetch(
+          "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/categories",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              Authorization: token
+            }
+          }
+        );
+
         response.json().then(result => {
-          this.setState({ eventsData: result.data, isLoading: false });
+          this.setState({ eventsData: result.data });
           console.log(this.state.eventsData);
         });
+
+        response2.json().then(result => {
+          this.setState({ categoricalData: result.data, isLoading: true });
+          console.log(this.state.categoricalData);
+        });
+
       } catch (error) {
         this.setState({ response: error });
         console.log(error);
@@ -148,6 +166,24 @@ export default class EventsScreen extends React.Component {
     }
   };
 
+  _renderCategories = item => {
+    return (
+      <TouchableOpacity
+        style={styles.cardContainer}
+        key={item}
+        onPress={() => this.props.navigation.navigate("detailEvent", { item })}
+        activeOpacity={0.8}
+      >
+        <View>
+            <Image
+              source={{uri:"http://"+item.Image}}
+              style={styles.imageEx}
+            />
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   _renderEvents = item => {
     return (
       <TouchableOpacity
@@ -199,7 +235,7 @@ export default class EventsScreen extends React.Component {
   };
 
   render() {
-    const { eventsData, isLoading, isModalVisible } = this.state;
+    const { eventsData, isLoading, isModalVisible, categoricalData } = this.state;
 
     return (
       <View style={{ flex: 1 }}>
@@ -226,10 +262,20 @@ export default class EventsScreen extends React.Component {
             onPress={() => this.props.navigation.navigate("createEvent")}
           />
         </View>
-        <Modal isVisible={isModalVisible}>
+        <Modal isVisible={isModalVisible} coverScreen={true}>
           <View style={{ flex: 1 }}>
             <Text>Hello!</Text>
             <Button title="Hide modal" onPress={this.toggleModal} />
+          </View> 
+          <View style = {styles.container}>
+            <FlatList
+              data={categoricalData}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => this._renderCategories(item)}
+              keyExtractor={(item, index) => index.toString()}
+              numColumns = {2}
+              horizontal = {false}
+            />
           </View>
         </Modal>
       </View>
@@ -239,10 +285,12 @@ export default class EventsScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f8f8f8"
+    backgroundColor: "#f8f8f8",
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   imageEx: {
-    width: 120,
+    width: 160,
     height: 120
   },
   buttonContainerStyle: {
@@ -261,7 +309,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#39CA74"
   },
   cardContainer: {
-    margin: 10,
+    padding: 5,
     height: 150,
     backgroundColor: "#fff",
     justifyContent: "flex-start",
