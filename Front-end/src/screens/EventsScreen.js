@@ -8,11 +8,12 @@ import {
   Image,
   Share,
   TouchableOpacity,
-  TouchableHighlight
+  TouchableHighlight,
+  Modal
 } from "react-native";
 import { Button, Icon } from "react-native-elements";
 import { format } from "date-fns";
-import Modal from 'react-native-modal';
+//import Modal from 'react-native-modal';
 import moment from "moment";
 
 export default class EventsScreen extends React.Component {
@@ -149,11 +150,12 @@ export default class EventsScreen extends React.Component {
   };
 
   filterCategories = async (id) => {
+    console.log(id)
     try {
       const token = await AsyncStorage.getItem("userToken");
       try {
         let response = await fetch(
-          "http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/events",
+          `http://ec2-54-183-219-162.us-west-1.compute.amazonaws.com:3000/events/filter/${id}`,
           {
             method: "GET",
             headers: {
@@ -163,12 +165,11 @@ export default class EventsScreen extends React.Component {
           }
         );
         
-        console.log(id);
         response.json().then(result => {
-          console.log(result);
-          this.setState({ eventsData: result.data });
+          console.log('hey');
+          this.setState({ eventsData: result.events });
           this.toggleModal();
-          console.log(this.state.eventsData);
+          console.log(result);
         });
       } catch (error ) {
         console.log(error);
@@ -179,10 +180,18 @@ export default class EventsScreen extends React.Component {
 
   }
 
+  _renderHeader = () => {
+    return (
+      <View style = {styles.flatHeaderContainer} >
+        <Text style={styles.flatHeader}>Categories</Text>
+      </View> 
+    );
+  }
+
   _renderCategories = item => {
     return (
       <TouchableOpacity
-        style={styles.cardContainer}
+        style={styles.catContainer}
         key={item}
         onPress={() => this.filterCategories(item.id)}
         activeOpacity={0.8}
@@ -190,7 +199,7 @@ export default class EventsScreen extends React.Component {
         <View>
             <Image
               source={{uri:"http://"+item.Image}}
-              style={styles.imageEx}
+              style={styles.imageCatEx}
             />
             <Text style={styles.catNames}>
               {item.Name}
@@ -258,12 +267,11 @@ export default class EventsScreen extends React.Component {
             onPress={() => this.props.navigation.navigate("createEvent")}
           />
         </View>
-        <Modal isVisible={isModalVisible} coverScreen={true}>
-          <View style={{ flex: 1 }}>
-            <Text>Hello!</Text>
-            <Button title="Hide modal" onPress={this.toggleModal} />
-          </View> 
-          <View style = {styles.container}>
+        <Modal animationType="slide"
+        transparent={false}
+        visible={isModalVisible}
+        >
+          <View style = {styles.flatListCat}>
             <FlatList
               data={categoricalData}
               showsVerticalScrollIndicator={false}
@@ -271,6 +279,8 @@ export default class EventsScreen extends React.Component {
               keyExtractor={(item, index) => index.toString()}
               numColumns = {2}
               horizontal = {false}
+              directionalLockEnabled = {true}
+              ListHeaderComponent={this._renderHeader}
             />
           </View>
         </Modal>
@@ -282,6 +292,9 @@ export default class EventsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f8f8f8",
+  },
+  flatListCat: {
+    backgroundColor: "#f8f8f8",
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -289,8 +302,12 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   imageEx: {
-    width: 160,
+    width: 150,
     height: 120
+  },
+  imageCatEx: {
+    width: 190,
+    height: 130
   },
   buttonContainerStyle: {
     marginTop: 20,
@@ -307,9 +324,30 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#39CA74"
   },
-  cardContainer: {
-    padding: 2,
-
+  flatHeader: {
+    textAlign: "center",
+    fontWeight: "bold",
+    color: "white",
+    fontFamily: "Verdana",
+    fontSize: 20
+  },
+  flatHeaderContainer: {
+    borderColor: 'lightgrey',
+    borderWidth: 1,
+    margin: 10,
+    height: 50,
+    backgroundColor: "#fff",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: 5,
+    position: "relative",
+    shadowOffset: { width: 3, height: 3 },
+    shadowColor: "black",
+    shadowOpacity: 0.1
+  },
+  catContainer: {
+    width: 185,
     height: 150,
     backgroundColor: "#fff",
     justifyContent: "flex-start",
@@ -317,6 +355,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: 5,
     borderColor: "lightgrey",
+    position: "relative",
+    shadowOffset: { width: 3, height: 3 },
+    shadowColor: "black",
+    shadowOpacity: 0.1
+  },
+  cardContainer: {
+    flex: 1,
+    borderColor: 'lightgrey',
+    borderWidth: 1,
+    margin: 10,
+    height: 150,
+    backgroundColor: "#fff",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: 5,
     position: "relative",
     shadowOffset: { width: 3, height: 3 },
     shadowColor: "black",
