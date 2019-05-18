@@ -202,8 +202,9 @@ export default class EventsScreen extends React.Component {
         <ImageBackground
           source={{uri:"http://"+item.Image}}
           style={styles.imageCatEx}
+          imageStyle={{borderRadius: 5}}
         >
-          <View style={{backgroundColor: 'rgba(0,0,0,.4)', width: '100%', height: '100%'}}/>
+          <View style={{backgroundColor: 'rgba(0,0,0,.4)', width: '100%', height: '100%', borderRadius: 5}}/>
         </ImageBackground>
         <Text style={styles.catNames}>
           {item.Name}
@@ -345,8 +346,8 @@ const styles = StyleSheet.create({
   },
   imageCatEx: {
     flex: 1,
-    borderRadius: 5,
-    opacity: 0.8
+    opacity: 0.8,
+    borderRadius: 5
   },
   buttonContainerStyle: {
     marginTop: 20,
