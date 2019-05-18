@@ -25,10 +25,10 @@ export default class EventsScreen extends React.Component {
       headerTintColor: "white",
       headerTitleStyle: {
         fontWeight: "bold",
-        color: "white"
+        color: "#FFCC33"
       },
       headerStyle: {
-        backgroundColor: "#39CA74"
+        backgroundColor: "#330033"
       },
       headerRight: (
         <Icon
@@ -55,10 +55,15 @@ export default class EventsScreen extends React.Component {
   }
 
   async componentDidMount() {
-    this.setState({ isLoading: true, isModalVisible: false });
+    this.setState({ isModalVisible: false });
     
     this.props.navigation.setParams({ handleModal: this.toggleModal})
+    this.getEvents()
+  }
 
+  getEvents = async () => {
+    console.log('Refreshing')
+    this.setState({ isLoading: true})
     try {
       const token = await AsyncStorage.getItem("userToken");
       const userId = await AsyncStorage.getItem("userId");
@@ -88,11 +93,10 @@ export default class EventsScreen extends React.Component {
 
         response.json().then(result => {
           this.setState({ eventsData: result.data });
-          console.log(this.state.eventsData);
         });
 
         response2.json().then(result => {
-          this.setState({ categoricalData: result.data, isLoading: true });
+          this.setState({ categoricalData: result.data, isLoading: false });
           console.log(this.state.categoricalData);
         });
 
@@ -217,22 +221,41 @@ export default class EventsScreen extends React.Component {
         onPress={() => this.props.navigation.navigate("detailEvent", { item })}
         activeOpacity={0.8}
       >
-        <View style={{ flex: 1, marginLeft: 10 }}>
+        <View
+          style={{ flex: 2, justifyContent: "center", alignItems: "center" }}
+        >
           <Image
-            //source={require("../img/sample_image.jpg")}
-            source= {{uri:"http://"+item.Image}}
+            source={{ uri: "http://" + item.Image }}
             style={styles.imageEx}
           />
         </View>
-        <View style={{ flex: 1 }}>
-          <View style={{ marginTop: 15 }}>
+        <View
+          style={{
+            flex: 3,
+            flexDirection: "column",
+            justifyContent: "center",
+            marginLeft: 20,
+            marginRight: 10
+          }}
+        >
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <Text style={styles.titleStyling}>{item.Name}</Text>
-            <Text style={{ color: "#333" }}>
-              {moment.utc(item.StartDate).format("MMMM DD")}
-              {" | "}
-              {format("January 01, 2019 " + item.StartTime, "hh:mm a")}
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: "#333", fontSize: 14 }}>
+              {item.LocationName}
             </Text>
-            <Text style={{ color: "#333" }}>{item.LocationName}</Text>
+          </View>
+          <View
+            style={{
+              alignItems: "flex-end",
+              justifyContent: "center",
+              padding: 5
+            }}
+          >
+            <Text style={{ color: "#330033", fontSize: 20 }}>
+              {moment.utc(item.StartDate).format("MMMM DD")}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -250,6 +273,8 @@ export default class EventsScreen extends React.Component {
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => this._renderEvents(item)}
             keyExtractor={(item, index) => index.toString()}
+            onRefresh={() => this.getEvents()}
+            refreshing={this.state.isLoading}
           />
         </View>
 
@@ -326,7 +351,8 @@ const styles = StyleSheet.create({
   },
   titleStyling: {
     fontFamily: "Verdana",
-    fontSize: 18
+    fontSize: 20,
+    color: "#48474C"
   },
   buttonStyling: {
     width: 60,
@@ -365,8 +391,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     flex: 1,
-    borderColor: 'lightgrey',
-    borderWidth: 1,
+    borderColor: "lightgrey",
     margin: 10,
     height: 150,
     backgroundColor: "#fff",

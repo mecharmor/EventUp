@@ -14,7 +14,7 @@ import {
   FlatList,
 } from "react-native";
 import { SimpleLineIcons } from "@expo/vector-icons";
-import { Button, Avatar, Icon } from "react-native-elements";
+import { Button, Avatar, Icon, Divider } from "react-native-elements";
 import moment from "moment";
 import { format } from "date-fns";
 import MapView, { Marker } from "react-native-maps";
@@ -27,20 +27,25 @@ export default class DetailEventScreen extends React.Component {
     
     return {
       title: "Details",
-      headerTintColor: "#FFF",
+      headerTintColor: "#FFCC33",
+      headerTitleStyle: {
+        fontWeight: "bold",
+        color: "#FFCC33"
+      },
       headerStyle: {
-        backgroundColor: "#39CA74",
+        backgroundColor: "#330033",
         borderBottomWidth: 0,
         headerTintColor: "#FFF",
       },
       headerRight: (
-      <Icon
-        name='share'
-        type='material'
-        color='#fff'
-        iconStyle={{ marginRight: 15 }} 
-        onPress={ () => handleShare()}
-      />
+      <TouchableOpacity onPress={ () => handleShare()}>  
+        <Icon
+          name='share'
+          type='material'
+          color='#fff'
+          iconStyle={{ color: '#FFCC33', marginRight: 15 }} 
+        />
+      </TouchableOpacity>
       )
     };
   };
@@ -280,6 +285,36 @@ export default class DetailEventScreen extends React.Component {
     }
   };
 
+  _renderComment = (item) => {
+    return(
+      <View
+        style={{
+          flexDirection: "row",
+          marginBottom: 25,
+        }}>
+        <View
+          style={styles.avatarView}>
+          <Avatar
+            size="small"
+            rounded
+            title={item.FirstName.substring(0, 1) + item.LastName.substring(0, 1)}
+          />
+        </View>
+        <View style={{}}>
+          <View style={{ flexDirection: "row", paddingBottom: 5 }}>
+            <Text style={styles.commentName}> {item.FirstName}{" "}{item.LastName}</Text>
+            <Text style={styles.commentTimestamp}>  {moment.utc(item.Timestamp).format("MMMM DD")} {" | "} {format(item.Timestamp, "hh:mm a")} </Text>
+          </View>
+
+          <Text numberOfLines={5} style={{
+            flex: 1, width: 300,
+          }}>{" "}{item.Message}</Text>
+
+        </View>
+      </View>
+    );
+  }
+
   contentView = () => {
       const { isLoading, event, commentsText } = this.state;
   
@@ -304,14 +339,13 @@ export default class DetailEventScreen extends React.Component {
               <Text style={styles.generalInformationHeaderTitleStyle}>
                 {event.Name}
               </Text>
-              <Text style={styles.byTextStyle}>{event.CategoryName}</Text>
   
               <TouchableOpacity
                 style={styles.detailContainer}
                 onPress={() => this.onAddCalendarEvent(event)}
                 activeOpacity={0.8}
               >
-                <SimpleLineIcons name="calendar" size={25} />
+                <SimpleLineIcons name="calendar" size={25}  color='#330033'/>
                 <View style={styles.subDetailColumnContainer}>
                   <Text style={styles.detailMainText}>
                     {moment.utc(event.StartDate).format("MMMM DD")}
@@ -321,18 +355,32 @@ export default class DetailEventScreen extends React.Component {
                   </Text>
                 </View>
               </TouchableOpacity>
+              <View style={styles.detailContainer}>
+                <SimpleLineIcons 
+                  name='location-pin'
+                  size={25}
+                  color='#330033'
+                >
+
+                </SimpleLineIcons>
+                <View style={styles.subDetailColumnContainer}>
+                  <Text style={styles.detailMainText}>{event.LocationName}</Text>
+                  <Text style={styles.detailSubText}>San Francisco State University</Text>
+                </View>
+              </View>
                 <View style={styles.detailContainer}>
-                  <SimpleLineIcons name="tag" size={25} />
+                  <SimpleLineIcons name="tag" size={25} color='#330033' />
                   <View style={styles.subDetailColumnContainer}>
-                    <Text style={styles.detailMainText}>Free</Text>
-                    <Text style={styles.detailSubText}>on EventUp</Text>
+                    <Text style={styles.detailMainText}>{event.CategoryName}</Text>
+                    <Text style={styles.detailSubText}>Category</Text>
                   </View>
                 </View>
               </View>
+              <Divider style={{ backgroundColor: 'lightgrey', margin: 15, borderWidth: 0.2}} />
             {/* generalInformationContainer End */}
   
             <View style={styles.aboutEventContainer}>
-              <Text style={styles.aboutTitleStyle}>About</Text>
+              <Text style={styles.containerHeading}>Details</Text>
               <Text
                 style={styles.descriptionStyle}
                 numberOfLines={4}
@@ -344,7 +392,6 @@ export default class DetailEventScreen extends React.Component {
             {/* aboutEventContainer End */}
   
             <View style={styles.locationContainer}>
-              <Text style={styles.locationTitleStyle}>Location</Text>
               <Text style={styles.locationSubTitleStyle}>
                 {event.LocationName}
               </Text>
@@ -375,6 +422,9 @@ export default class DetailEventScreen extends React.Component {
             {/* Comments Section Start */}
   
             <View style={styles.commentsInput}>
+            <Text style={styles.baseText}>
+              Comments
+            </Text>
               <TextInput
                 placeholder="Leave a comment..."
                 style={{ paddingLeft: 5, paddingRight: 5, height: 80, borderColor: 'gray', borderWidth: 1 }}
@@ -388,53 +438,25 @@ export default class DetailEventScreen extends React.Component {
             <Button
               title="Comment"
               type="outline"
-              titleStyle={{ fontSize: 12, color: "white" }}
+              titleStyle={{ fontSize: 12, color: "#330033" }}
               containerStyle={{
                 marginTop: 20,
                 marginBottom: 40,
-                marginLeft: 20,
-                alignSelf: "center"
+                marginRight: 10,
+                alignSelf: "flex-end"
               }}
               buttonStyle={styles.commentButton}
               onPress={() => this.onCommentButtonPress()}
             />
-            <Text style={styles.baseText}>
-              Comments
-            </Text>
-  
-            <FlatList
-              data={this.state.commentsData}
-              style={styles.commentsList}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginBottom: 25,
-                  }}>
-                  <View
-                    style={styles.avatarView}>
-                    <Avatar
-                      size="small"
-                      rounded
-                      title={item.FirstName.substring(0, 1) + item.LastName.substring(0, 1)}
-                    />
-                  </View>
-                  <View style={{}}>
-                    <View style={{ flexDirection: "row", paddingBottom: 5 }}>
-                      <Text style={styles.commentName}> {item.FirstName}{" "}{item.LastName}</Text>
-                      <Text style={styles.commentTimestamp}>  {moment.utc(item.Timestamp).format("MMMM DD")} {" | "} {format(item.Timestamp, "hh:mm a")} </Text>
-                    </View>
-  
-                    <Text numberOfLines={5} style={{
-                      flex: 1, width: 300,
-                    }}>{" "}{item.Message}</Text>
-  
-                  </View>
-                </View>
-              )}
-            />
-          
+            <ScrollView style={{height: 240, padding: 5}}>
+              <FlatList
+                data={this.state.commentsData}
+                style={styles.commentsList}
+
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => this._renderComment(item)}
+              />
+            </ScrollView>
           </ScrollView>
           {/* Comments Section End */}
           <View style={styles.purchaseContainer}>
@@ -482,10 +504,11 @@ const styles = StyleSheet.create({
   generalInformationContainer: {
     flex: 2,
     width: "100%",
-    height: 375
+    height: 330,
   },
   generalInformationHeaderTitleStyle: {
-    fontSize: 25,
+    fontSize: 30,
+    fontWeight: 'bold',
     textAlign: "left",
     marginTop: 30,
     marginLeft: 15
@@ -517,33 +540,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     width: "100%",
-    height: 200
+    height: 100,
+    marginTop: 20
   },
-  aboutTitleStyle: {
+  containerHeading: {
     fontSize: 15,
-    marginTop: 30,
+    fontWeight: 'bold',
     marginBottom: 10,
     marginLeft: 15,
     marginRight: 15
+
   },
   descriptionStyle: {
     marginTop: 10,
     marginLeft: 15,
     marginRight: 15
   },
-  // about event end
 
   locationContainer: {
     flex: 2,
     width: "100%",
-    height: 400
-  },
-  locationTitleStyle: {
-    fontSize: 15,
-    marginTop: 30,
-    marginBottom: 10,
-    marginLeft: 15,
-    marginRight: 15
+    height:320
   },
   locationSubTitleStyle: {
     fontSize: 15,
@@ -570,14 +587,14 @@ const styles = StyleSheet.create({
   rsvpButton: {
     width: 375,
     height: 70,
-    backgroundColor: "#39CA74"
+    backgroundColor: "#FFCC33"
 },
 
   commentButton: {
     width: 80,
     height: 40,
     borderRadius: 5,
-    backgroundColor: "#39CA74"
+    backgroundColor: "#FFCC33"
   },
 
   commentsInput: {
@@ -603,7 +620,6 @@ const styles = StyleSheet.create({
   },
   baseText: {
     fontSize: 32,
-    marginLeft: 10,
     fontWeight: 'bold',
     paddingBottom: 20
   },

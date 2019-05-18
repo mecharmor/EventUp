@@ -2,9 +2,8 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { createBottomTabNavigator, createAppContainer, createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import PropTypes from 'prop-types';
-import { SimpleLineIcons } from '@expo/vector-icons';
+import { SimpleLineIcons, Entypo } from '@expo/vector-icons';
 
-import MyEventsScreen from '../screens/MyEventsScreen'
 import ProfileScreen from '../screens/ProfileScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
@@ -12,6 +11,7 @@ import EventsScreen from '../screens/EventsScreen';
 import CreateEventScreen from '../screens/CreateEvent';
 import DetailEventScreen from '../screens/DetailEventScreen';
 import AuthLoadingScreen  from '../screens/AuthLoadingScreen';
+import RsvpScreen from '../screens/RsvpScreen';
 
 const AuthStack =  createStackNavigator({
   login: {
@@ -50,7 +50,7 @@ EventStack.navigationOptions = ({ navigation }) => {
 
 const TicketStack = createStackNavigator({
   myEvents: {
-    screen: MyEventsScreen
+    screen: RsvpScreen
   }
 });
 
@@ -72,8 +72,8 @@ EventsTabIcon.propTypes = {
 };
 
 const TicketsTabIcon = ({ tintColor }) => (
-  <SimpleLineIcons
-    name="handbag"
+  <Entypo
+    name="ticket"
     color={tintColor}
     size={Platform.OS === 'ios' ? 22 : 22}
   />
@@ -104,7 +104,7 @@ const TabNavigator = createBottomTabNavigator({
   tickets: {
     screen: TicketStack,
     navigationOptions: {
-      tabBarLabel: 'Tickets',
+      tabBarLabel: 'RSVP',
       tabBarIcon: TicketsTabIcon,
     },
   },
@@ -123,10 +123,10 @@ const TabNavigator = createBottomTabNavigator({
   tabBarOptions: {
     showIcon: true,
     showLabel: true,
-    activeTintColor: '#E8787B',
+    activeTintColor: '#FFCA13',
     inactiveTintColor: '#999',
     style: {
-      backgroundColor: '#FFF',
+      backgroundColor: '#330033',
       padding: Platform.OS === 'ios' ? 5 : 0,
     },
     indicatorStyle: {
