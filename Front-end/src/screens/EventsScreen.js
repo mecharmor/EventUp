@@ -9,11 +9,11 @@ import {
   Share,
   TouchableOpacity,
   TouchableHighlight,
-  Modal
+  Modal,
+  ImageBackground
 } from "react-native";
 import { Button, Icon } from "react-native-elements";
 import { format } from "date-fns";
-//import Modal from 'react-native-modal';
 import moment from "moment";
 
 export default class EventsScreen extends React.Component {
@@ -196,15 +196,15 @@ export default class EventsScreen extends React.Component {
         onPress={() => this.filterCategories(item.id)}
         activeOpacity={0.8}
       >
-        <View>
-            <Image
-              source={{uri:"http://"+item.Image}}
-              style={styles.imageCatEx}
-            />
-            <Text style={styles.catNames}>
-              {item.Name}
-            </Text>
-        </View>
+        <ImageBackground
+          source={{uri:"http://"+item.Image}}
+          style={styles.imageCatEx}
+        >
+          <View style={{backgroundColor: 'rgba(0,0,0,.4)', width: '100%', height: '100%'}}/>
+        </ImageBackground>
+        <Text style={styles.catNames}>
+          {item.Name}
+        </Text> 
       </TouchableOpacity>
     )
   }
@@ -281,6 +281,7 @@ export default class EventsScreen extends React.Component {
               horizontal = {false}
               directionalLockEnabled = {true}
               ListHeaderComponent={this._renderHeader}
+              bounces = {false}
             />
           </View>
         </Modal>
@@ -295,19 +296,28 @@ const styles = StyleSheet.create({
   },
   flatListCat: {
     backgroundColor: "#f8f8f8",
-    justifyContent: 'center',
-    alignItems: 'center'
+    //justifyContent: 'flex-start',
+    //alignItems: 'center'
   },
   catNames: {
-    textAlign: "center"
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 40,
+    fontFamily: "System",
+    textAlign: "center",
+    color: "#ffffff",
+    fontSize: 25,
   },
   imageEx: {
-    width: 150,
+    width: 130,
     height: 120
   },
   imageCatEx: {
-    width: 190,
-    height: 130
+    flex: 1,
+    borderRadius: 5,
+    opacity: 0.8
   },
   buttonContainerStyle: {
     marginTop: 20,
@@ -325,37 +335,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#39CA74"
   },
   flatHeader: {
+    margin: 15,
     textAlign: "center",
     fontWeight: "bold",
-    color: "white",
+    color: "#FFCC33",
     fontFamily: "Verdana",
-    fontSize: 20
+    fontSize: 15
   },
   flatHeaderContainer: {
-    borderColor: 'lightgrey',
-    borderWidth: 1,
-    margin: 10,
-    height: 50,
-    backgroundColor: "#fff",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    height: 65,
+    backgroundColor: "#330033",
+    justifyContent: "center",
+    alignItems: "flex-end",
     flexDirection: "row",
-    borderRadius: 5,
     position: "relative",
     shadowOffset: { width: 3, height: 3 },
     shadowColor: "black",
     shadowOpacity: 0.1
   },
   catContainer: {
-    width: 185,
+    margin: 5,
+    width: 175,
     height: 150,
-    backgroundColor: "#fff",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    flexDirection: "row",
     borderRadius: 5,
     borderColor: "lightgrey",
-    position: "relative",
     shadowOffset: { width: 3, height: 3 },
     shadowColor: "black",
     shadowOpacity: 0.1
