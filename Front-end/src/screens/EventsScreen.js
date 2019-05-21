@@ -187,6 +187,14 @@ export default class EventsScreen extends React.Component {
     return (
       <View style = {styles.flatHeaderContainer} >
         <Text style={styles.flatHeader}>Categories</Text>
+        <Icon
+          name='close'
+          type='community'
+          color='#fff'
+          iconStyle={{ position: "absolute", left: 85, bottom: 10 }} 
+          underlayColor={"#330033"}
+          onPress={ this.toggleModal }
+        />
       </View> 
     );
   }
