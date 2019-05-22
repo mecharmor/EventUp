@@ -138,7 +138,7 @@ exports.revoke = (req, res, next) => {
 exports.getPosts = (req, res, next) => {
     let userId = req.userData.id;
     db.query('SELECT Event.*, ' +
-        'Category.Name AS CategoryName, Location.Name AS LocationName,' +
+        'Category.Name AS CategoryName, Location.Name AS LocationName, Location.Longitude, Location.Latitude,' +
         ' RSVP.isRSVP AS isRSVP'+
         ' FROM Event JOIN Location ON Event.LocationId = Location.id JOIN Category' +
         ' ON Event.CategoryId = Category.id' +
